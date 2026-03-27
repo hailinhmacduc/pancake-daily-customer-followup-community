@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.DS_Store
+data/*.json
+data/*.log
+docs/*.local.json
+/tmp/
+playwright-report/
+node_modules/
+*.zip

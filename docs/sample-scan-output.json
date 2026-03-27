@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "action": "scan",
+  "page_key": "my-page",
+  "page_id": "1234567890",
+  "rule": {
+    "last_sender": "page/admin",
+    "silent_days_gte": 2,
+    "excluded_tags": [
+      "KHÔNG MUA",
+      "ĐÃ CHỐT"
+    ]
+  },
+  "totals": {
+    "raw_conversations": 42,
+    "eligible_returned": 3,
+    "excluded_by_tag": 12,
+    "excluded_last_sender_not_page": 18,
+    "excluded_not_old_enough": 7,
+    "excluded_missing_updated_at": 2
+  },
+  "candidates": [
+    {
+      "conversation_id": "conv_001",
+      "customer_name": "Customer A",
+      "customer_fb_id": "fb_001",
+      "updated_at": "2026-03-24T09:10:00+07:00",
+      "silent_hours": 54.3,
+      "snippet": "Cho em xin thêm thông tin nhé",
+      "tags": [],
+      "assignees": [
+        "Sales 1"
+      ],
+      "last_sent_by_admin": "Admin A"
+    },
+    {
+      "conversation_id": "conv_002",
+      "customer_name": "Customer B",
+      "customer_fb_id": "fb_002",
+      "updated_at": "2026-03-24T11:40:00+07:00",
+      "silent_hours": 51.8,
+      "snippet": "Anh/chị xem giúp em mẫu này",
+      "tags": [
+        "CẦN GỌI LẠI"
+      ],
+      "assignees": [
+        "Sales 2"
+      ],
+      "last_sent_by_admin": "Admin B"
+    },
+    {
+      "conversation_id": "conv_003",
+      "customer_name": "Customer C",
+      "customer_fb_id": "fb_003",
+      "updated_at": "2026-03-24T13:05:00+07:00",
+      "silent_hours": 50.2,
+      "snippet": "Bên mình còn hàng không ạ",
+      "tags": [],
+      "assignees": [],
+      "last_sent_by_admin": "Admin A"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Pancake Daily Customer Follow-up
 
+> 🇻🇳 **[Đọc bản tiếng Việt tại đây (Vietnamese)](README.vi.md)**
+
 Community-ready reference project for daily follow-up of **silent Pancake conversations** using a hybrid approach:
 - **Pancake API** to scan eligible conversations
 - **Playwright + Chromium CDP** to open the real Pancake UI and send follow-up messages conservatively

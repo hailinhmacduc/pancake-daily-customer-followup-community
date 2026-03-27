@@ -1,4 +1,4 @@
-# Pancake Daily Customer Follow-up
+# Pancake-silent-reactivator-skill-for-Openclaw
 
 Dự án mã nguồn mở dùng để **chăm sóc lại khách hàng im lặng trên Pancake** mỗi ngày, sử dụng phương pháp kết hợp:
 - **Pancake API** để quét các cuộc hội thoại đủ điều kiện

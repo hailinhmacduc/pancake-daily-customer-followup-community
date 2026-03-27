@@ -1,64 +1,63 @@
 # Pancake Daily Customer Follow-up
 
-> 🇻🇳 **[Đọc bản tiếng Việt tại đây (Vietnamese)](README.vi.md)**
+Dự án mã nguồn mở dùng để **chăm sóc lại khách hàng im lặng trên Pancake** mỗi ngày, sử dụng phương pháp kết hợp:
+- **Pancake API** để quét các cuộc hội thoại đủ điều kiện
+- **Playwright + Chromium CDP** để mở giao diện Pancake thật và gửi tin nhắn follow-up một cách an toàn
 
-Community-ready reference project for daily follow-up of **silent Pancake conversations** using a hybrid approach:
-- **Pancake API** to scan eligible conversations
-- **Playwright + Chromium CDP** to open the real Pancake UI and send follow-up messages conservatively
+Repository này được thiết kế để **chia sẻ công khai trên GitHub**:
+- không chứa token thật
+- không chứa page ID hay đường dẫn profile riêng tư
+- không commit dữ liệu khách hàng
+- mọi thông tin nhạy cảm đều do người dùng cung cấp qua biến môi trường
 
-This repository is designed to be **shareable on GitHub**:
-- no real tokens included
-- no private page IDs or profile paths required in source code
-- no runtime customer data committed
-- all sensitive values are provided by the user through environment variables
-
-> ## Important
-> This repository is a **reference implementation**, not a turnkey growth tool.
-> Before using it in production, you should review:
-> - Pancake terms of service
-> - Facebook / Meta platform policies
-> - local privacy, consent, and customer-contact regulations
-> - your own operational approval process
+> ## Lưu ý quan trọng
+> Đây là **dự án tham khảo**, không phải công cụ growth sẵn dùng.
+> Trước khi sử dụng trong thực tế, bạn nên xem xét:
+> - Điều khoản dịch vụ của Pancake
+> - Chính sách nền tảng Facebook / Meta
+> - Quy định về quyền riêng tư và liên hệ khách hàng tại địa phương
+> - Quy trình phê duyệt nội bộ của bạn
 >
-> You are responsible for how you configure, review, and use this workflow.
+> Bạn chịu trách nhiệm về cách cấu hình, kiểm tra và sử dụng workflow này.
 
-## What this project does
+## Dự án này làm gì?
 
-Each run can:
-1. scan conversations from a Pancake page
-2. filter customers who have been silent for `N` days
-3. exclude conversations with blocked tags such as `ĐÃ CHỐT` or `KHÔNG MUA`
-4. deduplicate by customer Facebook ID
-5. attach to a logged-in Chromium session via CDP
-6. search the customer inside Pancake UI
-7. skip comment threads and send only when the script can verify a real Messenger conversation
-8. save run results, queue state, and anti-duplicate state to local JSON files
+Mỗi lần chạy có thể:
+1. Quét các cuộc hội thoại từ một trang Pancake
+2. Lọc khách hàng đã im lặng trong `N` ngày
+3. Loại trừ cuộc hội thoại có tag bị chặn như `ĐÃ CHỐT` hoặc `KHÔNG MUA`
+4. Loại trùng theo Facebook ID của khách hàng
+5. Kết nối vào phiên Chromium đã đăng nhập qua CDP
+6. Tìm kiếm khách hàng trong giao diện Pancake
+7. Bỏ qua comment thread, chỉ gửi khi xác nhận được đây là cuộc trò chuyện Messenger thật
+8. Lưu kết quả chạy, trạng thái hàng đợi và trạng thái chống trùng vào file JSON
 
-## Business rule used by default
+## Quy tắc nghiệp vụ mặc định
 
-A conversation is eligible when:
-- the last sender is the page/admin
-- the conversation is older than `PANCAKE_SCAN_DAYS` (default `2`)
-- tags do **not** contain `ĐÃ CHỐT`
-- tags do **not** contain `KHÔNG MUA`
+Một cuộc hội thoại đủ điều kiện khi:
+- Người gửi cuối cùng là trang/admin
+- Cuộc hội thoại cũ hơn `PANCAKE_SCAN_DAYS` ngày (mặc định `2`)
+- Tag **không** chứa `ĐÃ CHỐT`
+- Tag **không** chứa `KHÔNG MUA`
 
-## Safety behavior
+## Hành vi an toàn
 
-This workflow is intentionally conservative:
-- if the UI looks like a **comment thread**, it skips
-- if the search result cannot be verified confidently, it skips
-- if the message already exists in the thread, it skips
-- if a customer was already sent in a previous run, it skips
+Workflow này được thiết kế thận trọng:
+- Nếu giao diện trông giống **comment thread** → bỏ qua
+- Nếu kết quả tìm kiếm không thể xác nhận chắc chắn → bỏ qua
+- Nếu tin nhắn đã tồn tại trong cuộc trò chuyện → bỏ qua
+- Nếu khách hàng đã được gửi ở lần chạy trước → bỏ qua
 
-Goal: **fail safe instead of sending to the wrong conversation**.
+Mục tiêu: **Thà bỏ sót còn hơn gửi nhầm cuộc hội thoại**.
 
 ---
 
-## Project structure
+## Cấu trúc dự án
 
 ```text
 pancake-daily-customer-followup-community/
-├─ README.md
+├─ README.md              # Tài liệu tiếng Anh
+├─ README.vi.md           # Tài liệu tiếng Việt (file này)
 ├─ LICENSE
 ├─ requirements.txt
 ├─ .gitignore
@@ -77,47 +76,47 @@ pancake-daily-customer-followup-community/
 
 ---
 
-## Requirements
+## Yêu cầu hệ thống
 
-- macOS or Linux
+- chạy trên thiết bị local
 - Python 3.10+
-- Chromium installed
-- a Pancake page account already logged in inside the chosen Chromium profile
-- permission to access Pancake API for your page
+- Chromium đã cài đặt
+- Tài khoản Pancake đã đăng nhập trong profile Chromium được chọn
+- Quyền truy cập Pancake API cho trang của bạn
 
-## Required user-provided information
+## Thông tin người dùng cần cung cấp
 
-Before running, the user must provide:
+Trước khi chạy, bạn cần cung cấp:
 
 ### Pancake API
-- `PANCAKE_PAGE_ID`
-- `PANCAKE_PAGE_ACCESS_TOKEN`
-- `PANCAKE_PAGE_KEY` (friendly name, for example `my-page`)
-- `PANCAKE_PAGE_URL` (for example `https://pancake.vn/my-page-slug`)
+- `PANCAKE_PAGE_ID` — ID trang Pancake
+- `PANCAKE_PAGE_ACCESS_TOKEN` — Token truy cập
+- `PANCAKE_PAGE_KEY` — Tên gợi nhớ, ví dụ `my-page`
+- `PANCAKE_PAGE_URL` — Ví dụ `https://pancake.vn/my-page-slug`
 
-### Browser / UI automation
-- a Chromium installation path
-- a Chromium user profile path that is already logged into Pancake
-- a CDP port / CDP URL
+### Trình duyệt / Tự động hóa UI
+- Đường dẫn cài đặt Chromium
+- Đường dẫn profile Chromium đã đăng nhập Pancake
+- Cổng CDP / URL CDP
 
-### Optional business config
-- follow-up message template
-- maximum sends per run
-- silent-day threshold
-- output file locations
+### Cấu hình nghiệp vụ (tùy chọn)
+- Mẫu tin nhắn follow-up
+- Số lượng gửi tối đa mỗi lần chạy
+- Ngưỡng ngày im lặng
+- Vị trí file đầu ra
 
 ---
 
-## Setup
+## Cài đặt
 
-### 1. Clone the repository
+### 1. Clone repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/hailinhmacduc/pancake-daily-customer-followup-community.git
 cd pancake-daily-customer-followup-community
 ```
 
-### 2. Create a virtual environment
+### 2. Tạo môi trường ảo
 
 ```bash
 python3 -m venv .venv
@@ -126,15 +125,15 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-### 3. Create your `.env`
+### 3. Tạo file `.env`
 
 ```bash
 cp config/.env.example .env
 ```
 
-Then fill in the real values.
+Sau đó điền các giá trị thật vào.
 
-Example:
+Ví dụ:
 
 ```env
 PANCAKE_PAGE_KEY=my-page
@@ -157,128 +156,124 @@ PANCAKE_CHROMIUM_BIN=/Applications/Chromium.app/Contents/MacOS/Chromium
 PANCAKE_PYTHON_BIN=python3
 ```
 
-### 4. Log into Pancake in Chromium
+### 4. Đăng nhập Pancake trên Chromium
 
-Use the same Chromium profile you configured in `.env`.
+Sử dụng đúng profile Chromium đã cấu hình trong `.env`.
 
-If Chromium is not already running with remote debugging, the runner script will try to start it.
+Nếu Chromium chưa chạy với remote debugging, script sẽ tự khởi động.
 
 ---
 
-## Usage
+## Cách sử dụng
 
-### A. Scan only
+### A. Chỉ quét (scan)
 
 ```bash
 set -a && source .env && set +a
 python src/pancake_followup.py scan
 ```
 
-This prints a JSON result with:
-- total raw conversations
-- excluded counts by rule
-- eligible candidates
+Kết quả JSON bao gồm:
+- Tổng số cuộc hội thoại thô
+- Số lượng bị loại theo từng quy tắc
+- Danh sách ứng viên đủ điều kiện
 
-A sample sanitized output is included at:
-- `docs/sample-scan-output.json`
+Xem mẫu đầu ra đã ẩn dữ liệu thật tại: `docs/sample-scan-output.json`
 
-### B. Run the daily follow-up sender
+### B. Chạy gửi follow-up hàng ngày
 
 ```bash
 chmod +x scripts/run_followup.sh
 ./scripts/run_followup.sh
 ```
 
-This will:
-1. ensure Chromium CDP is available
-2. scan candidates
-3. build a send queue
-4. attach to Pancake UI
-5. send up to `PANCAKE_MAX_SEND_PER_RUN`
-6. save results to JSON files
+Script sẽ:
+1. Đảm bảo Chromium CDP khả dụng
+2. Quét ứng viên
+3. Tạo hàng đợi gửi
+4. Kết nối vào giao diện Pancake
+5. Gửi tối đa `PANCAKE_MAX_SEND_PER_RUN` tin nhắn
+6. Lưu kết quả vào file JSON
 
-### C. Run a local smoke test
+### C. Chạy smoke test
 
 ```bash
 chmod +x scripts/smoke_test.sh
 ./scripts/smoke_test.sh
 ```
 
-This validates:
-- Python syntax for the main script
-- required documentation files exist
-- `.env.example` contains placeholder-only values
-- no obvious local runtime JSON files are tracked in `data/`
+Kiểm tra:
+- Cú pháp Python của script chính
+- Các file tài liệu bắt buộc tồn tại
+- `.env.example` chỉ chứa giá trị placeholder
+- Không có file JSON runtime nào bị track trong `data/`
 
 ---
 
-## Output files
+## File đầu ra
 
-By default the script writes:
+Script tạo ra các file sau trong thư mục `data/`:
 
-- `data/pancake-followup-state.json`  
-  anti-duplicate memory, pending locks, send history
-
-- `data/pancake-followup-queue.json`  
-  queue generated for the current run
-
-- `data/pancake-followup-last-run.json`  
-  final run summary, sent list, failed list, skipped list
+| File | Mô tả |
+|------|--------|
+| `pancake-followup-state.json` | Bộ nhớ chống trùng, khóa pending, lịch sử gửi |
+| `pancake-followup-queue.json` | Hàng đợi được tạo cho lần chạy hiện tại |
+| `pancake-followup-last-run.json` | Tổng kết lần chạy: danh sách đã gửi, thất bại, bỏ qua |
 
 ---
 
-## Why CDP + real Chromium?
+## Tại sao dùng CDP + Chromium thật?
 
-Many Pancake workflows are more stable when attached to a real logged-in browser session instead of trying to log in from scratch in a fresh headless browser every time.
+Nhiều workflow Pancake ổn định hơn khi kết nối vào phiên trình duyệt đã đăng nhập thay vì đăng nhập từ đầu trong headless browser mỗi lần.
 
-Benefits:
-- reuse a persistent logged-in session
-- easier debugging
-- closer to real operator workflow
-- safer UI validation before sending
-
----
-
-## Why some candidates fail
-
-Typical failure reasons:
-- `comment_ui_detected_skip`
-- `no_messenger_candidate_after_search`
-- `conversation_search_input_not_found`
-- `post_send_message_not_detected_message`
-
-These are expected safe-fail outcomes in ambiguous UI cases.
+Lợi ích:
+- Tái sử dụng phiên đăng nhập lâu dài
+- Dễ debug hơn
+- Gần với quy trình vận hành thực tế
+- Xác nhận UI an toàn hơn trước khi gửi
 
 ---
 
-## Recommended production workflow
+## Lý do một số ứng viên thất bại
 
-1. test with `scan` only
-2. verify a few candidate conversations manually in Pancake UI
-3. set `PANCAKE_MAX_SEND_PER_RUN=1` for first send tests
-4. increase gradually after confidence improves
-5. keep logs and result files for audit
-6. review whether your message content and contact cadence are compliant for your market/use case
+Các lý do thất bại thường gặp:
+- `comment_ui_detected_skip` — Phát hiện giao diện comment, bỏ qua
+- `no_messenger_candidate_after_search` — Không tìm thấy ứng viên Messenger sau tìm kiếm
+- `conversation_search_input_not_found` — Không tìm thấy ô tìm kiếm cuộc hội thoại
+- `post_send_message_not_detected_message` — Không xác nhận được tin nhắn sau khi gửi
+
+Đây là các kết quả **an toàn và có chủ đích** trong trường hợp giao diện không rõ ràng.
 
 ---
 
-## Security and privacy notes
+## Quy trình sản xuất khuyến nghị
 
-Do **not** commit the following:
+1. Chạy `scan` trước để xem danh sách ứng viên
+2. Kiểm tra thủ công một vài cuộc hội thoại trong giao diện Pancake
+3. Đặt `PANCAKE_MAX_SEND_PER_RUN=1` cho lần gửi thử đầu tiên
+4. Tăng dần sau khi đã tự tin
+5. Giữ lại log và file kết quả để kiểm toán
+6. Xem xét nội dung tin nhắn và tần suất liên hệ phù hợp với quy định thị trường
+
+---
+
+## Bảo mật và quyền riêng tư
+
+**KHÔNG** commit các file sau:
 - `.env`
-- real Pancake access tokens
-- real page IDs if you consider them private
-- real customer data JSON outputs
-- private browser profiles
-- screenshots or logs containing customer names/messages
+- Token truy cập Pancake thật
+- Page ID thật (nếu bạn coi là riêng tư)
+- File JSON chứa dữ liệu khách hàng
+- Profile trình duyệt riêng
+- Ảnh chụp màn hình hoặc log chứa tên/tin nhắn khách hàng
 
-This repository already ignores common sensitive runtime files through `.gitignore`, but you should still review local changes before pushing.
+Repository đã cấu hình `.gitignore` để bỏ qua các file runtime nhạy cảm, nhưng bạn vẫn nên kiểm tra trước khi push.
 
 ---
 
-## Cron example
+## Ví dụ cron
 
-Run every day at 13:00:
+Chạy mỗi ngày lúc 13:00:
 
 ```cron
 0 13 * * * cd /path/to/pancake-daily-customer-followup-community && /bin/bash scripts/run_followup.sh >> /tmp/pancake-followup-cron.log 2>&1
@@ -286,30 +281,30 @@ Run every day at 13:00:
 
 ---
 
-## Customization ideas
+## Ý tưởng mở rộng
 
-You can extend this project with:
-- Telegram approval before send
-- multi-page support
-- configurable excluded tags
-- screenshot capture for failed cases
-- CSV/Google Sheets export
-- retry and backoff policies
-- Slack/Discord notifications
-
----
-
-## Disclaimer
-
-Use responsibly and comply with:
-- Pancake terms
-- Facebook platform policies
-- local privacy and customer-contact regulations
-
-Review the message template, business rules, and approval process before enabling automated sends.
+Bạn có thể phát triển thêm:
+- Phê duyệt qua Telegram trước khi gửi
+- Hỗ trợ nhiều trang cùng lúc
+- Cấu hình tag loại trừ linh hoạt
+- Chụp ảnh màn hình cho trường hợp thất bại
+- Xuất CSV / Google Sheets
+- Cơ chế retry và backoff
+- Thông báo qua Slack / Discord
 
 ---
 
-## License
+## Miễn trừ trách nhiệm
+
+Sử dụng có trách nhiệm và tuân thủ:
+- Điều khoản của Pancake
+- Chính sách nền tảng Facebook
+- Quy định quyền riêng tư và liên hệ khách hàng tại địa phương
+
+Hãy kiểm tra mẫu tin nhắn, quy tắc nghiệp vụ và quy trình phê duyệt trước khi bật gửi tự động.
+
+---
+
+## Giấy phép
 
 MIT
